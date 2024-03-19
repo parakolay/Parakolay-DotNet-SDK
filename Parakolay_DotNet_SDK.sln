@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1706.8
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parakolay_DotNet_SDK", "Parakolay_DotNet_SDK\Parakolay_DotNet_SDK.csproj", "{8FACA5A5-7E96-4B54-90D3-3211A915DA23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.csproj", "{73607AF0-5B6E-4D1A-BC38-38612294C488}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FACA5A5-7E96-4B54-90D3-3211A915DA23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FACA5A5-7E96-4B54-90D3-3211A915DA23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FACA5A5-7E96-4B54-90D3-3211A915DA23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FACA5A5-7E96-4B54-90D3-3211A915DA23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73607AF0-5B6E-4D1A-BC38-38612294C488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73607AF0-5B6E-4D1A-BC38-38612294C488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73607AF0-5B6E-4D1A-BC38-38612294C488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73607AF0-5B6E-4D1A-BC38-38612294C488}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {745EDF56-BD82-4E71-B525-CE2792495407}
+	EndGlobalSection
+EndGlobal
