@@ -15,7 +15,7 @@ SDK'yı kullanabilmek için Parakolay tarafından sağlanan API anahtarlarına i
 - `apiSecret`
 - `merchantNumber`
 
-Bu bilgileri [Parakolay](https://www.parakolay.com) hesabınızdan edinebilirsiniz.
+Bu bilgileri [Parakolay](https://merchant.parakolay.com) hesabınızdan edinebilirsiniz.
 
 ## Başlangıç
 
