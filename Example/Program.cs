@@ -42,5 +42,10 @@ class Program
             ReturnResult ret = await apiClient.Return(amount, "ORDER_ID");
             Console.WriteLine(ret);
         }
+        else if (args[0] == "bininfo")
+        {
+            BINInfoResult ret = await apiClient.BINInfo("BIN_NUMBER (First 6 or 8 digits)");
+            Console.WriteLine(ret);
+        }
     }
 }

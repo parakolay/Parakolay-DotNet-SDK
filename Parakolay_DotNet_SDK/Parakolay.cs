@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -298,6 +299,34 @@ namespace Parakolay_DotNet_SDK
             catch (Exception e)
             {
                 return new ReturnResult { errorMessage = e.Message, isSucceed = false };
+            }
+        }
+
+        public async Task<BINInfoResult> BINInfo(string binNumber, string languageCode = "TR")
+        {
+            var data = new
+            {
+                binNumber,
+                languageCode,
+            };
+
+            try
+            {
+                var response = await this.jsonClient.PostAsync("/v1/Payments/bin-information", new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json"));
+                var decodedResponse = JsonConvert.DeserializeObject<BINInfoResult>(await response.Content.ReadAsStringAsync());
+
+                if (CheckError(decodedResponse))
+                {
+                    return decodedResponse;
+                }
+                else
+                {
+                    return new BINInfoResult { errorMessage = decodedResponse!.errorMessage, isSucceed = false };
+                }
+            }
+            catch (Exception e)
+            {
+                return new BINInfoResult { errorMessage = e.Message, isSucceed = false };
             }
         }
 
