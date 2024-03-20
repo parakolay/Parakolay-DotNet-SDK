@@ -1,4 +1,4 @@
-public class ProvisionResult
+public class ReverseResult
 { 
     public string orderId { get; set; }
     public string provisionNumber { get; set; }

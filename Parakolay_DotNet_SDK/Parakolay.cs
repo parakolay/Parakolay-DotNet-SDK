@@ -6,7 +6,7 @@ namespace Parakolay_DotNet_SDK
 {
     public class Parakolay
     {
-        private string version = "v1.0";
+        private string version = "v1.0.1";
 
         private HttpClient multipartClient;
         private HttpClient jsonClient;
@@ -20,7 +20,7 @@ namespace Parakolay_DotNet_SDK
         private string signature;
 
         private double amount;
-        private string currency;
+        private string currency = "TRY";
         private string cardholderName;
         private string cardToken;
         private string threeDSessionID;
@@ -79,14 +79,13 @@ namespace Parakolay_DotNet_SDK
             return threedDinitResult;
         }
 
-        public async Task<ProvisionResult> Complete3DS(Init3dsResponseModel paymentData)
+        public async Task<ProvisionResult> Complete3DS(string threeDSessionID, double amount, string cardHolderName, string cardToken, string currency = "TRY")
         {
-            this.threeDSessionID = paymentData.threeDSessionID;
-            string result = await Get3DSessionResult();
+            string result = await Get3DSessionResult(threeDSessionID);
             if (result == "VerificationFinished")
-                return await Provision(paymentData.amount, paymentData.cardHolderName, paymentData.cardToken, paymentData.currency);
+                return await Provision(amount, cardHolderName, cardToken, threeDSessionID, currency);
             else
-                return new ProvisionResult { Error = "3D Secure process is not completed yet.", Status = false };
+                return new ProvisionResult { errorMessage = "3D Secure process is not completed yet.", isSucceed = false };
         }
 
         private async Task<string> GetCardToken(string cardNumber, string cardholderName, string expireMonth, string expireYear, string cvc)
@@ -123,7 +122,7 @@ namespace Parakolay_DotNet_SDK
             }
         }
 
-        private async Task<string> Get3DSession(double amount, int pointAmount, string currency, string languageCode)
+        private async Task<string> Get3DSession(double amount, int pointAmount, string currency = "TRY", string languageCode = "TR")
         {
             this.amount = amount;
             this.currency = currency;
@@ -155,7 +154,7 @@ namespace Parakolay_DotNet_SDK
             }
         }
 
-        private async Task<Init3dsResponseModel> Get3DInit(string callbackURL, string languageCode)
+        private async Task<Init3dsResponseModel> Get3DInit(string callbackURL, string languageCode = "TR")
         {
             var data = new MultipartFormDataContent
             {
@@ -186,11 +185,12 @@ namespace Parakolay_DotNet_SDK
                 return new Init3dsResponseModel { errorMessage = e.Message };
             }
         }
-        private async Task<string> Get3DSessionResult(string languageCode = "TR")
+
+        private async Task<string> Get3DSessionResult(string threeDSessionId, string languageCode = "TR")
         {
             var data = new
             {
-                threeDSessionId = this.threeDSessionID,
+                threeDSessionId,
                 languageCode
             };
 
@@ -209,7 +209,8 @@ namespace Parakolay_DotNet_SDK
                 return JsonConvert.SerializeObject(new { error = e.Message });
             }
         }
-        private async Task<ProvisionResult> Provision(double amount, string cardHolderName, string cardToken, string currency)
+
+        private async Task<ProvisionResult> Provision(double amount, string cardHolderName, string cardToken, string threeDSessionId, string currency = "TRY")
         {
             var data = new
             {
@@ -218,7 +219,7 @@ namespace Parakolay_DotNet_SDK
                 currency,
                 paymentType = "Auth",
                 cardHolderName,
-                threeDSessionId = this.threeDSessionID
+                threeDSessionId
             };
 
             try
@@ -234,12 +235,69 @@ namespace Parakolay_DotNet_SDK
                 }
                 else
                 {
-                    return new ProvisionResult { Error = decodedResponse!.errorMessage, Status = false };
+                    return new ProvisionResult { errorMessage = decodedResponse!.errorMessage, isSucceed = false };
                 }
             }
             catch (Exception e)
             {
-                return new ProvisionResult { Error = e.Message, Status = false };
+                return new ProvisionResult { errorMessage = e.Message, isSucceed = false };
+            }
+        }
+
+        public async Task<ReverseResult> Reverse(string orderid, string languageCode = "TR")
+        {
+            var data = new
+            {
+                orderid,
+                languageCode,
+            };
+
+            try
+            {
+                var response = await this.jsonClient.PostAsync("/v1/Payments/reverse", new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json"));
+                var decodedResponse = JsonConvert.DeserializeObject<ReverseResult>(await response.Content.ReadAsStringAsync());
+
+                if (CheckError(decodedResponse))
+                {
+                    return decodedResponse;
+                }
+                else
+                {
+                    return new ReverseResult { errorMessage = decodedResponse!.errorMessage, isSucceed = false };
+                }
+            }
+            catch (Exception e)
+            {
+                return new ReverseResult { errorMessage = e.Message, isSucceed = false };
+            }
+        }
+
+        public async Task<ReturnResult> Return(double amount, string orderid, string languageCode = "TR")
+        {
+            var data = new
+            {
+                amount,
+                orderid,
+                languageCode,
+            };
+
+            try
+            {
+                var response = await this.jsonClient.PostAsync("/v1/Payments/return", new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json"));
+                var decodedResponse = JsonConvert.DeserializeObject<ReturnResult>(await response.Content.ReadAsStringAsync());
+
+                if (CheckError(decodedResponse))
+                {
+                    return decodedResponse;
+                }
+                else
+                {
+                    return new ReturnResult { errorMessage = decodedResponse!.errorMessage, isSucceed = false };
+                }
+            }
+            catch (Exception e)
+            {
+                return new ReturnResult { errorMessage = e.Message, isSucceed = false };
             }
         }
 

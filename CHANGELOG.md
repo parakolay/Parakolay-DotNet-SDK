@@ -1,3 +1,5 @@
-## 1.0.0
+## 1.0.1
 
-* TODO: Initial release.
+* Reverse function added.
+* Return function added.
+* Provision return fixed, Provision function changed accordingly.
