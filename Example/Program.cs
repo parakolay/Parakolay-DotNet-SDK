@@ -47,5 +47,15 @@ class Program
             BINInfoResult ret = await apiClient.BINInfo("BIN_NUMBER (First 6 or 8 digits)");
             Console.WriteLine(ret);
         }
+        else if (args[0] == "installment")
+        {
+            InstallmentResult ret = await apiClient.Installment("BIN_NUMBER (First 6 or 8 digits)", merchantNumber, amount);
+            Console.WriteLine(ret);
+        }
+        else if (args[0] == "pointInquiry")
+        {
+            var ret = await apiClient.GetPoints("CARD_NUMBER", "CARDHOLDER_NAME", "EXPIRE_MONTH (MM)", "EXPIRE_YEAR (YY)", "CVV");
+            Console.WriteLine(ret);
+        }
     }
 }

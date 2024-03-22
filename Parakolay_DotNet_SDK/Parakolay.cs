@@ -80,6 +80,14 @@ namespace Parakolay_DotNet_SDK
             return threedDinitResult;
         }
 
+        public async Task<PointsResult> GetPoints(string cardNumber, string cardholderName, string expireMonth, string expireYear, string cvc)
+        {
+            this.cardToken = await GetCardToken(cardNumber, cardholderName, expireMonth, expireYear, cvc);
+            PointsResult result = await PointInquiry(this.cardToken);
+
+            return result;
+        }
+
         public async Task<ProvisionResult> Complete3DS(string threeDSessionID, double amount, string cardHolderName, string cardToken, string currency = "TRY")
         {
             string result = await Get3DSessionResult(threeDSessionID);
@@ -327,6 +335,64 @@ namespace Parakolay_DotNet_SDK
             catch (Exception e)
             {
                 return new BINInfoResult { errorMessage = e.Message, isSucceed = false };
+            }
+        }
+
+        public async Task<dynamic> Installment(string binNumber, string merchantNumber, double amount)
+        {
+            var data = new
+            {
+                binNumber,
+                merchantNumber,
+                amount,
+            };
+
+            try
+            {
+                var response = await this.jsonClient.GetAsync("/v1/Installment?binNumber="+binNumber+"&amount="+amount+"&merchantNumber="+merchantNumber);
+                var decodedResponse = JsonConvert.DeserializeObject<InstallmentResult>(await response.Content.ReadAsStringAsync());
+
+                if (CheckError(decodedResponse))
+                {
+                    return decodedResponse;
+                }
+                else
+                {
+                    return new InstallmentResult { errorMessage = decodedResponse!.errorMessage, isSucceed = false };
+                }
+            }
+            catch (Exception e)
+            {
+                return new InstallmentResult { errorMessage = e.Message, isSucceed = false };
+            }
+        }
+
+        private async Task<PointsResult> PointInquiry(string cardToken, string languageCode="TR", string currency="TRY")
+        {
+            var data = new
+            {
+                cardToken,
+                languageCode,
+                currency,
+            };
+
+            try
+            {
+                var response = await this.jsonClient.PostAsync("/v1/Payments/pointInquiry", new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json"));
+                var decodedResponse = JsonConvert.DeserializeObject<PointsResult>(await response.Content.ReadAsStringAsync());
+
+                if (CheckError(decodedResponse))
+                {
+                    return decodedResponse;
+                }
+                else
+                {
+                    return new PointsResult { errorMessage = decodedResponse!.errorMessage, isSucceed = false };
+                }
+            }
+            catch (Exception e)
+            {
+                return new PointsResult { errorMessage = e.Message, isSucceed = false };
             }
         }
 
