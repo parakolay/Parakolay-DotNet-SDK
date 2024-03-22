@@ -7,7 +7,7 @@ namespace Parakolay_DotNet_SDK
 {
     public class Parakolay
     {
-        private string version = "v1.0.1";
+        private string version = "v1.0.2";
 
         private HttpClient multipartClient;
         private HttpClient jsonClient;
@@ -349,7 +349,7 @@ namespace Parakolay_DotNet_SDK
 
             try
             {
-                var response = await this.jsonClient.GetAsync("/v1/Installment?binNumber="+binNumber+"&amount="+amount+"&merchantNumber="+merchantNumber);
+                var response = await this.jsonClient.GetAsync("/v1/Installment?binNumber=" + binNumber + "&amount=" + amount + "&merchantNumber=" + merchantNumber);
                 var decodedResponse = JsonConvert.DeserializeObject<InstallmentResult>(await response.Content.ReadAsStringAsync());
 
                 if (CheckError(decodedResponse))
@@ -367,7 +367,7 @@ namespace Parakolay_DotNet_SDK
             }
         }
 
-        private async Task<PointsResult> PointInquiry(string cardToken, string languageCode="TR", string currency="TRY")
+        private async Task<PointsResult> PointInquiry(string cardToken, string languageCode = "TR", string currency = "TRY")
         {
             var data = new
             {
