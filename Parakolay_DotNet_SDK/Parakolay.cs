@@ -7,7 +7,7 @@ namespace Parakolay_DotNet_SDK
 {
     public class Parakolay
     {
-        private string version = "v1.0.2";
+        private string version = "v1.0.3";
 
         private HttpClient multipartClient;
         private HttpClient jsonClient;
@@ -64,6 +64,7 @@ namespace Parakolay_DotNet_SDK
 
         public async Task<Init3dsResponseModel> Init3DS(string cardNumber, string cardholderName, string expireMonth, string expireYear, string cvc, double amount, int pointAmout, string callbackURL, string currency = "TRY", string languageCode = "TR")
         {
+            this.cardholderName = cardholderName;
             this.cardToken = await GetCardToken(cardNumber, cardholderName, expireMonth, expireYear, cvc);
             this.threeDSessionID = await Get3DSession(amount, pointAmout, currency, languageCode);
             Init3dsResponseModel threedDinitResult = await Get3DInit(callbackURL, languageCode);
@@ -175,7 +176,8 @@ namespace Parakolay_DotNet_SDK
                 { new StringContent(this.nonce.ToString()), "Nonce" },
                 { new StringContent(this.signature), "Signature" },
                 { new StringContent(this.conversationId), "ConversationId" },
-                { new StringContent(this.merchantNumber), "MerchantNumber" }
+                { new StringContent(this.merchantNumber), "MerchantNumber" },
+                { new StringContent(this.cardholderName), "CardHolderName" }
             };
 
             try
