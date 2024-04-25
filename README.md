@@ -41,7 +41,7 @@ SDK'yı projenize ekledikten sonra, aşağıdaki gibi kullanarak ödeme işlemle
 3D Secure ödeme işlemi başlatmak için `Init3DS` metodunu kullanabilirsiniz. Örnek kullanım aşağıdaki gibidir:
 
 ```csharp
-Init3dsResponseModel result = await apiClient.Init3DS("KART_NUMARASI", "KART_SAHIBI_ADI", "SKT_AY", "SKT_YIL", "CVV", miktar, puanMiktarı, "CALLBACK_URL");
+Init3dsResponseModel result = await apiClient.Init3DS("KART_NUMARASI", "KART_SAHIBI_ADI", "SKT_AY", "SKT_YIL", "CVV", miktar, puanMiktarı, taksitSayısı, "CALLBACK_URL");
 ```
 
 ### 3D Secure Tamamlama
@@ -49,7 +49,7 @@ Init3dsResponseModel result = await apiClient.Init3DS("KART_NUMARASI", "KART_SAH
 Kullanıcı 3D Secure doğrulamasını tamamladıktan sonra, ödeme işlemini tamamlamak için `Complete3DS` metodunu kullanabilirsiniz:
 
 ```csharp
-var completeResult = await apiClient.Complete3DS(result);
+var completeResult = await apiClient.Complete3DS("3DSession ID", miktar, taksitSayisi, "KART_SAHIBI_ADI", "CardToken");
 ```
 
 ## Hata Yönetimi

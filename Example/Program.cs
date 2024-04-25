@@ -16,20 +16,21 @@ class Program
         string testUrl = "https://api-test.parakolay.com";
 
         int amount = 1;
+        int installmentCount = 2;
         int pointAmount = 0;
 
         Parakolay apiClient = new Parakolay(baseUrl, apiKey, apiSecret, merchantNumber, conversationId, clientIpAddress);
 
         if (args.Length == 0)
         {
-            Init3dsResponseModel result = await apiClient.Init3DS("CARD_NUMBER", "CARDHOLDER_NAME", "EXPIRE_MONTH (MM)", "EXPIRE_YEAR (YY)", "CVV", amount, pointAmount, "YOUR_CALLBACK_URL");
+            Init3dsResponseModel result = await apiClient.Init3DS("CARD_NUMBER", "CARDHOLDER_NAME", "EXPIRE_MONTH (MM)", "EXPIRE_YEAR (YY)", "CVV", amount, pointAmount, installmentCount, "YOUR_CALLBACK_URL");
             Console.WriteLine(result.cardToken);
             Console.WriteLine(result.threeDSessionID);
             Console.WriteLine(result.htmlContent);
         }
         else if (args[0] == "complete")
         {
-            ProvisionResult complete = await apiClient.Complete3DS("3DS_SESSION_ID", amount, "CARDHOLDER_NAME", "CARD_TOKEN");
+            ProvisionResult complete = await apiClient.Complete3DS("3DS_SESSION_ID", amount, installmentCount, "CARDHOLDER_NAME", "CARD_TOKEN");
             Console.WriteLine(complete);
         }
         else if (args[0] == "reverse")

@@ -7,7 +7,7 @@ namespace Parakolay_DotNet_SDK
 {
     public class Parakolay
     {
-        private string version = "v1.0.3";
+        private string version = "v1.0.4";
 
         private HttpClient multipartClient;
         private HttpClient jsonClient;
@@ -62,11 +62,11 @@ namespace Parakolay_DotNet_SDK
             };
         }
 
-        public async Task<Init3dsResponseModel> Init3DS(string cardNumber, string cardholderName, string expireMonth, string expireYear, string cvc, double amount, int pointAmout, string callbackURL, string currency = "TRY", string languageCode = "TR")
+        public async Task<Init3dsResponseModel> Init3DS(string cardNumber, string cardholderName, string expireMonth, string expireYear, string cvc, double amount, int pointAmout, int installmentCount, string callbackURL, string currency = "TRY", string languageCode = "TR")
         {
             this.cardholderName = cardholderName;
             this.cardToken = await GetCardToken(cardNumber, cardholderName, expireMonth, expireYear, cvc);
-            this.threeDSessionID = await Get3DSession(amount, pointAmout, currency, languageCode);
+            this.threeDSessionID = await Get3DSession(amount, pointAmout, installmentCount, currency, languageCode);
             Init3dsResponseModel threedDinitResult = await Get3DInit(callbackURL, languageCode);
 
             threedDinitResult.cardToken = this.cardToken;
@@ -89,11 +89,11 @@ namespace Parakolay_DotNet_SDK
             return result;
         }
 
-        public async Task<ProvisionResult> Complete3DS(string threeDSessionID, double amount, string cardHolderName, string cardToken, string currency = "TRY")
+        public async Task<ProvisionResult> Complete3DS(string threeDSessionID, double amount,int installmentCount, string cardHolderName, string cardToken, string currency = "TRY")
         {
             string result = await Get3DSessionResult(threeDSessionID);
             if (result == "VerificationFinished")
-                return await Provision(amount, cardHolderName, cardToken, threeDSessionID, currency);
+                return await Provision(amount, installmentCount, cardHolderName, cardToken, threeDSessionID, currency);
             else
                 return new ProvisionResult { errorMessage = "3D Secure process is not completed yet.", isSucceed = false };
         }
@@ -132,7 +132,7 @@ namespace Parakolay_DotNet_SDK
             }
         }
 
-        private async Task<string> Get3DSession(double amount, int pointAmount, string currency = "TRY", string languageCode = "TR")
+        private async Task<string> Get3DSession(double amount, int pointAmount, int installmentCount, string currency = "TRY", string languageCode = "TR")
         {
             this.amount = amount;
             this.currency = currency;
@@ -144,7 +144,7 @@ namespace Parakolay_DotNet_SDK
                 this.cardToken,
                 currency,
                 paymentType = "Auth",
-                installmentCount = 1,
+                installmentCount = installmentCount,
                 languageCode
             };
 
@@ -221,7 +221,7 @@ namespace Parakolay_DotNet_SDK
             }
         }
 
-        private async Task<ProvisionResult> Provision(double amount, string cardHolderName, string cardToken, string threeDSessionId, string currency = "TRY")
+        private async Task<ProvisionResult> Provision(double amount, int installmentCount, string cardHolderName, string cardToken, string threeDSessionId, string currency = "TRY")
         {
             var data = new
             {
@@ -230,6 +230,7 @@ namespace Parakolay_DotNet_SDK
                 currency,
                 paymentType = "Auth",
                 cardHolderName,
+                installmentCount = installmentCount,
                 threeDSessionId
             };
 

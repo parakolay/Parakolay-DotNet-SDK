@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Installment Added for transaction functions.
+
 ## 1.0.3
 
 * CardHolderName added for 3D init function.
