@@ -7,7 +7,7 @@ namespace Parakolay_DotNet_SDK
 {
     public class Parakolay
     {
-        private string version = "v1.0.4";
+        private string version = "v1.0.5";
 
         private HttpClient multipartClient;
         private HttpClient jsonClient;
@@ -73,6 +73,7 @@ namespace Parakolay_DotNet_SDK
             threedDinitResult.threeDSessionID = this.threeDSessionID;
 
             threedDinitResult.amount = amount;
+            threedDinitResult.installmentCount = installmentCount;
             threedDinitResult.cardHolderName = cardholderName;
             threedDinitResult.currency = this.currency;
 
@@ -89,11 +90,13 @@ namespace Parakolay_DotNet_SDK
             return result;
         }
 
-        public async Task<ProvisionResult> Complete3DS(string threeDSessionID, double amount,int installmentCount, string cardHolderName, string cardToken, string currency = "TRY")
+        public async Task<ProvisionResult> Complete3DS(string threeDSessionID, double amount, int installmentCount, string cardHolderName, string cardToken, string currency = "TRY")
         {
             string result = await Get3DSessionResult(threeDSessionID);
             if (result == "VerificationFinished")
                 return await Provision(amount, installmentCount, cardHolderName, cardToken, threeDSessionID, currency);
+            else if (result == "ProvisionCompleted")
+                return new ProvisionResult { errorMessage = "Provision Already Completed.", isSucceed = false };
             else
                 return new ProvisionResult { errorMessage = "3D Secure process is not completed yet.", isSucceed = false };
         }
@@ -237,13 +240,11 @@ namespace Parakolay_DotNet_SDK
             try
             {
                 var response = await this.jsonClient.PostAsync("/v1/Payments/provision", new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json"));
-                var decodedResponse = JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
+                var decodedResponse = JsonConvert.DeserializeObject<ProvisionResult>(await response.Content.ReadAsStringAsync());
 
                 if (CheckError(decodedResponse))
                 {
-                    //TODO: Clear the session data set before.
-
-                    return JsonConvert.SerializeObject(decodedResponse);
+                    return decodedResponse;
                 }
                 else
                 {
@@ -338,6 +339,28 @@ namespace Parakolay_DotNet_SDK
             catch (Exception e)
             {
                 return new BINInfoResult { errorMessage = e.Message, isSucceed = false };
+            }
+        }
+
+        public async Task<dynamic> Installment()
+        {
+            try
+            {
+                var response = await this.jsonClient.GetAsync("/v1/Installment");
+                var decodedResponse = JsonConvert.DeserializeObject<InstallmentResult>(await response.Content.ReadAsStringAsync());
+
+                if (CheckError(decodedResponse))
+                {
+                    return decodedResponse;
+                }
+                else
+                {
+                    return new InstallmentResult { errorMessage = decodedResponse!.errorMessage, isSucceed = false };
+                }
+            }
+            catch (Exception e)
+            {
+                return new InstallmentResult { errorMessage = e.Message, isSucceed = false };
             }
         }
 
